@@ -1,0 +1,25 @@
+--- a/escalation/orchestrator.py
++++ b/escalation/orchestrator.py
+@@ -15,6 +15,7 @@
+ GROQ_URL = os.environ.get(
+     "ESCALATION_OPENAI_BASE", "https://api.groq.com/openai/v1/chat/completions")
+ GROQ_REASONING = os.environ.get("ESCALATION_GROQ_REASONING", "none")
++LOCAL_CHAT_TEMPLATE_KWARGS = json.loads(os.environ.get("ESCALATION_CHAT_TEMPLATE_KWARGS", "{}"))
+ 
+ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+@@ -337,8 +338,12 @@
+     if model.startswith("groq:"):
+         if not GROQ_API_KEY:
+             raise RuntimeError("GROQ_API_KEY not set but ladder uses a groq: model")
+-        extra = {"reasoning_effort": GROQ_REASONING} if GROQ_REASONING else None
+-        return openai_chat(GROQ_URL, GROQ_API_KEY, model[len("groq:"):], messages, temperature, extra, meta)
++        extra = {}
++        if GROQ_REASONING:
++            extra["reasoning_effort"] = GROQ_REASONING
++        if LOCAL_CHAT_TEMPLATE_KWARGS:
++            extra["chat_template_kwargs"] = LOCAL_CHAT_TEMPLATE_KWARGS
++        return openai_chat(GROQ_URL, GROQ_API_KEY, model[len("groq:"):], messages, temperature, extra or None, meta)
+     if model.startswith("claude:"):  # subscription auth via the Claude Code CLI
+         return claude_cli_chat(model[len("claude:"):], messages, temperature, meta)
+     if model.startswith("openai:"):

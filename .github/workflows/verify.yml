@@ -1,0 +1,29 @@
+name: Verify publication bundle
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/run_hybrid_tp4.sh
+          bash -n scripts/run_tp4_base.sh
+      - name: Validate CSV evidence
+        run: |
+          python3 - <<'PY'
+          import csv
+          from pathlib import Path
+          for path in Path("results").rglob("*.csv"):
+              with path.open(newline="", encoding="utf-8") as handle:
+                  header = next(csv.reader(handle), None)
+              assert header and "configuration" in header and "concurrency" in header, path
+          PY
+      - name: Reject common secrets and model artifacts
+        run: |
+          ! git ls-files | grep -E '(^|/)(\.env|id_rsa|.*\.pem|.*\.key)$'
+          ! git ls-files | grep -E '\.(safetensors|bin|pt|pth)$'

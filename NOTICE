@@ -1,0 +1,12 @@
+This repository documents an experimental deployment built on
+timothystewart6/vllm-gb10 (https://github.com/timothystewart6/vllm-gb10), which
+was used as the GB10 vLLM image/repository base. It also relies on vLLM and
+DFlash2 upstream work. This repository adds deployment configuration,
+benchmarking, and documentation; it does not claim ownership of upstream code
+or checkpoints.
+
+The optional `harness/` integration is based on the MIT-licensed code in
+slee-persis/GVS5H at commit 0bc99eae8c6ef0d49a91808272c60928113da1ce.
+This repository contains only an integration wrapper and a minimal patch; it
+does not redistribute GVS5H source, its paper, figures, run data, or benchmark
+problem statements. See harness/README.md for setup and attribution.

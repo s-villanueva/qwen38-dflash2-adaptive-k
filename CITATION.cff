@@ -1,0 +1,5 @@
+cff-version: 1.2.0
+message: "If you use this deployment case study, please cite the repository."
+title: "Qwen3.8-27B DFlash2 hybrid speculative decoding on TP=4 DGX Spark"
+type: software
+license: Apache-2.0
