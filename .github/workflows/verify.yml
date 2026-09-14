@@ -18,10 +18,17 @@ jobs:
           python3 - <<'PY'
           import csv
           from pathlib import Path
+          benchmark_columns = {"configuration", "concurrency"}
+          harness_columns = {
+              "run_type", "task_count", "max_active", "model_calls",
+              "completion_tokens", "wall_seconds", "interpretation",
+          }
           for path in Path("results").rglob("*.csv"):
               with path.open(newline="", encoding="utf-8") as handle:
                   header = next(csv.reader(handle), None)
-              assert header and "configuration" in header and "concurrency" in header, path
+              columns = set(header or [])
+              required = harness_columns if path.name.startswith("hard_task_harness_") else benchmark_columns
+              assert required <= columns, path
           PY
       - name: Reject common secrets and model artifacts
         run: |
